@@ -10,3 +10,7 @@ minimumReleaseAgeExclude:
   - expo@55.0.25
   - expo-router@55.0.15
   - expo-symbols@55.0.9
+  - expo-dev-client@55.0.35
+  - expo-dev-launcher@55.0.36
+  - expo-dev-menu@55.0.30
+  - '@expo/ui@55.0.17'
