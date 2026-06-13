@@ -5,6 +5,8 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedRef,
   useSharedValue,
+  withRepeat,
+  withTiming,
 } from 'react-native-reanimated';
 
 const iconDataSets = {
@@ -33,7 +35,7 @@ const iconDataSets = {
 
 const ITEM_HEIGHT = 160;
 const SCROLL_SPEED = 20; // pixels per second
-const FRAME_RATE = 60; // frames per second
+const GAP = 10; // gap between items from styles
 
 interface SmoothInfiniteScrollProps {
   scrollDirection?: 'up' | 'down';
@@ -51,21 +53,32 @@ const SmoothInfiniteScroll = ({
   const items = [...iconData, ...iconData];
   const totalContentHeight = iconData.length * ITEM_HEIGHT;
 
+  // Calculate total wrap height including gaps between items
+  // Each item has a gap after it (except conceptually the last, but we're wrapping)
+  const totalWrapHeight = totalContentHeight + iconData.length * GAP;
+
   useEffect(() => {
-    if (scrollDirection === 'up') {
-      scrollY.value = totalContentHeight;
-    } else {
+    // Calculate duration based on SCROLL_SPEED and total distance
+    const duration = (totalWrapHeight / SCROLL_SPEED) * 1000; // convert to milliseconds
+
+    if (scrollDirection === 'down') {
+      // Start at 0, animate to totalWrapHeight
       scrollY.value = 0;
+      scrollY.value = withRepeat(
+        withTiming(totalWrapHeight, { duration }),
+        -1, // infinite repeats
+        false // don't reverse
+      );
+    } else {
+      // Start at totalWrapHeight, animate to 0
+      scrollY.value = totalWrapHeight;
+      scrollY.value = withRepeat(
+        withTiming(0, { duration }),
+        -1, // infinite repeats
+        false // don't reverse
+      );
     }
-
-    const interval = setInterval(() => {
-      const increment =
-        (SCROLL_SPEED / FRAME_RATE) * (scrollDirection === 'up' ? -1 : 1);
-      scrollY.value += increment;
-    }, 1000 / FRAME_RATE);
-
-    return () => clearInterval(interval);
-  }, [scrollDirection]);
+  }, [scrollDirection, totalWrapHeight]);
 
   useAnimatedReaction(
     () => scrollY.value,
