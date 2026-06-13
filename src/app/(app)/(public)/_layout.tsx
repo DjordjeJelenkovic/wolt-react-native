@@ -3,7 +3,8 @@ const Layout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="(index)"
+        // ovde mi je ispod bio index u zagradi i zato je se video na strani onako
+        name="index"
         options={{
           headerShown: false,
           contentStyle: { backgroundColor: '#fff' },
